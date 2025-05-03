@@ -5,8 +5,8 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5100;
 
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.yrnn1sn.mongodb.net/?appName=Cluster0`;
 
@@ -24,6 +24,16 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const coffeeCollection = client.db("coffeeDB").collection("coffee");
+    
+    app.post('/coffee',async(req,res)=>{
+      const newCoffee=req.body;
+      console.log(newCoffee);
+      const result = await coffeeCollection.insertOne(newCoffee);
+      res.send(result);
+    })
+
+
 
 
     
@@ -32,7 +42,7 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close() ;
   }
 }
 run().catch(console.dir);
