@@ -25,6 +25,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const coffeeCollection = client.db("coffeeDB").collection("coffee");
+    const userCollection = client.db("coffeeDB").collection("user");
     
     app.post('/coffee',async(req,res)=>{
       const newCoffee=req.body;
@@ -51,11 +52,11 @@ async function run() {
       res.send(result);
     })
     app.put('/coffee/:id',async(req,res)=>{
-      const id = req.params.id;
-      const filter = {_id: new ObjectId(id)};
+     const id = req.params.id;
+     const filter = {_id: new ObjectId(id)};
      const options = { upsert: true };
      const updatedCoffee = req.body;
-         const coffee = {
+     const coffee = {
       $set: {
         name: updatedCoffee.name,
          chef: updatedCoffee.chef,
@@ -69,8 +70,23 @@ async function run() {
       const result = await coffeeCollection.updateOne(filter,coffee,options);
       res.send(result);
     })
-
-    
+    app.post("/user", async(req,res)=>{
+      const userClient = req.body;
+      console.log(userClient, " from server ");
+      const result = await userCollection.insertOne(userClient);
+      res.send(result);
+    })
+    app.get('/user',async(req,res)=>{
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+    app.delete('/user/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
