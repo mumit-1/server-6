@@ -87,6 +87,17 @@ async function run() {
       const result = await userCollection.deleteOne(query);
       res.send(result);
     })
+    app.patch('/user', async(req,res)=>{
+      const email = req.body.email;
+      const filter = {email};
+      const updateDoc = {
+      $set: {
+        lastLogged : req.body?.lastLogged
+      }
+    };
+       const result = await userCollection.updateOne(filter, updateDoc);
+       res.send(result);
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -104,3 +115,17 @@ app.get("/",(req,res)=>{
 app.listen(port,()=>{
     console.log(`server-0n at ${port}`);
 })
+
+/**
+ * firebase hosting------------------
+ * 1 firebase tool (one time)
+ * 2 firebase login (one time)
+ * 3 onetime for each project : firebase init
+ * 4 what yo want do : hosting 
+ * 5 select project (already have in firebase console)
+ * 6 what will be your public repo -- dist
+ * 7 single page -- y
+ * ## each time before deploying 
+ * 8 npm run build 
+ * 9 firebase deploy
+ */
